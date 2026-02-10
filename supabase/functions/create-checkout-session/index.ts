@@ -51,7 +51,7 @@ serve(async (req) => {
       line_items: [
         {
           price_data: {
-            currency: "bgn",
+            currency: "eur",
             product_data: {
               name: "CyberShield Premium",
               description: "Пълен достъп до всички модули за киберсигурност",
