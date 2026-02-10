@@ -4,6 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Layout } from '@/components/layout/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import ModuleQuiz from '@/components/ModuleQuiz';
+import { quizData } from '@/data/quizData';
 import { 
   ArrowLeft, 
   ArrowRight,
@@ -260,6 +262,11 @@ Router Firewall:
                 </CardContent>
               </Card>
             ))}
+            {/* Quiz Section */}
+            <ModuleQuiz
+              moduleId="network-security"
+              questions={quizData['network-security'][language === 'bg' ? 'bg' : 'en'] || quizData['network-security'].bg}
+            />
           </div>
 
           <div className="flex justify-between items-center mt-12 pt-8 border-t border-border">

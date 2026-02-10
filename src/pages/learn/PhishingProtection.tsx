@@ -3,6 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Layout } from '@/components/layout/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import ModuleQuiz from '@/components/ModuleQuiz';
+import { quizData } from '@/data/quizData';
 import { 
   ArrowLeft, 
   ArrowRight,
@@ -280,6 +282,11 @@ If you've already become a victim:
                 </div>
               </CardContent>
             </Card>
+            {/* Quiz Section */}
+            <ModuleQuiz
+              moduleId="phishing-protection"
+              questions={quizData['phishing-protection'][language === 'bg' ? 'bg' : 'en'] || quizData['phishing-protection'].bg}
+            />
           </div>
 
           {/* Navigation */}

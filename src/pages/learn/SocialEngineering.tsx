@@ -5,6 +5,8 @@ import { Layout } from '@/components/layout/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { ArrowLeft, Users, Crown, Shield } from 'lucide-react';
+import ModuleQuiz from '@/components/ModuleQuiz';
+import { quizData } from '@/data/quizData';
 
 const SocialEngineering = () => {
   const { t, language } = useLanguage();
@@ -232,6 +234,11 @@ Lesson: Even big companies are vulnerable!`,
                 </CardContent>
               </Card>
             ))}
+            {/* Quiz Section */}
+            <ModuleQuiz
+              moduleId="social-engineering"
+              questions={quizData['social-engineering'][language === 'bg' ? 'bg' : 'en'] || quizData['social-engineering'].bg}
+            />
           </div>
 
           <div className="flex justify-between items-center mt-12 pt-8 border-t border-border">

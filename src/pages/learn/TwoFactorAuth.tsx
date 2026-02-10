@@ -4,6 +4,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Layout } from '@/components/layout/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
+import ModuleQuiz from '@/components/ModuleQuiz';
+import { quizData } from '@/data/quizData';
 import { 
   ArrowLeft, 
   ArrowRight,
@@ -288,6 +290,11 @@ Rule: If there's a 2FA option - TURN IT ON!`,
                 </CardContent>
               </Card>
             ))}
+            {/* Quiz Section */}
+            <ModuleQuiz
+              moduleId="2fa-setup"
+              questions={quizData['2fa-setup'][language === 'bg' ? 'bg' : 'en'] || quizData['2fa-setup'].bg}
+            />
           </div>
 
           {/* Navigation */}

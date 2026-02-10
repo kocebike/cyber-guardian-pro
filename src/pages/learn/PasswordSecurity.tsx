@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Layout } from '@/components/layout/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import ModuleQuiz from '@/components/ModuleQuiz';
+import { quizData } from '@/data/quizData';
 import { 
   ArrowLeft, 
   ArrowRight,
@@ -242,6 +244,11 @@ Recommended managers:
                 </div>
               </CardContent>
             </Card>
+            {/* Quiz Section */}
+            <ModuleQuiz
+              moduleId="password-security"
+              questions={quizData['password-security'][language === 'bg' ? 'bg' : 'en'] || quizData['password-security'].bg}
+            />
           </div>
 
           {/* Navigation */}
