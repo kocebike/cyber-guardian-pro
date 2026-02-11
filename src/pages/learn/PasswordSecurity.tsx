@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Layout } from '@/components/layout/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ModuleQuiz from '@/components/ModuleQuiz';
+import LearnMediaBlock from '@/components/LearnMediaBlock';
 import { quizData } from '@/data/quizData';
 import { 
   ArrowLeft, 
@@ -37,6 +38,11 @@ const PasswordSecurity = () => {
 • 81% от пробивите в сигурността са заради слаби или откраднати пароли
 • Средният хакер може да разбие 8-символна парола за по-малко от 1 час
 • Password123 се среща в над 10 милиона компрометирани акаунта`,
+          // To add media to a section, add a "media" array:
+          // media: [
+          //   { type: 'image', src: '/images/password-stats.png', alt: 'Password statistics', caption: 'Статистика за пароли' },
+          //   { type: 'video', src: 'https://www.youtube.com/embed/VIDEO_ID', alt: 'Video about passwords', caption: 'Видео урок' },
+          // ],
         },
         {
           title: 'Как да създадете силна парола?',
@@ -198,6 +204,9 @@ Recommended managers:
                       {section.content}
                     </pre>
                   </div>
+                  {'media' in section && (section as any).media && (
+                    <LearnMediaBlock media={(section as any).media} />
+                  )}
                 </CardContent>
               </Card>
             ))}

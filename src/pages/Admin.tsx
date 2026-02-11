@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Layout } from '@/components/layout/Layout';
@@ -14,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   Users, CreditCard, TrendingUp, Shield, Loader2, 
   BarChart3, Trophy, UserX, UserCheck, Crown,
-  BookOpen, CheckCircle, XCircle
+  BookOpen, CheckCircle, XCircle, Settings, Save
 } from 'lucide-react';
 
 interface Profile {
@@ -49,6 +51,13 @@ interface QuizResult {
   completed_at: string;
 }
 
+interface AppSetting {
+  id: string;
+  key: string;
+  value: string;
+  description: string | null;
+}
+
 const MODULE_NAMES: Record<string, string> = {
   'password-security': 'Сигурност на паролите',
   'phishing-protection': 'Защита от фишинг',
@@ -66,6 +75,9 @@ const Admin = () => {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
+  const [settings, setSettings] = useState<AppSetting[]>([]);
+  const [settingsForm, setSettingsForm] = useState<Record<string, string>>({});
+  const [savingSettings, setSavingSettings] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -73,17 +85,23 @@ const Admin = () => {
       if (!isAdmin) return;
 
       try {
-        const [profilesRes, subscriptionsRes, rolesRes, quizRes] = await Promise.all([
+        const [profilesRes, subscriptionsRes, rolesRes, quizRes, settingsRes] = await Promise.all([
           supabase.from('profiles').select('*').order('created_at', { ascending: false }),
           supabase.from('user_subscriptions').select('*'),
           supabase.from('user_roles').select('*'),
           supabase.from('quiz_results').select('*').order('completed_at', { ascending: false }),
+          supabase.from('app_settings').select('*'),
         ]);
 
         setProfiles(profilesRes.data || []);
         setSubscriptions(subscriptionsRes.data || []);
         setRoles(rolesRes.data || []);
         setQuizResults(quizRes.data || []);
+        const fetchedSettings = (settingsRes.data || []) as unknown as AppSetting[];
+        setSettings(fetchedSettings);
+        const form: Record<string, string> = {};
+        fetchedSettings.forEach(s => { form[s.key] = s.value; });
+        setSettingsForm(form);
       } catch (error) {
         console.error('Error fetching admin data:', error);
       } finally {
@@ -179,6 +197,27 @@ const Admin = () => {
     }
   };
 
+  const handleSaveSettings = async () => {
+    setSavingSettings(true);
+    try {
+      for (const setting of settings) {
+        if (settingsForm[setting.key] !== setting.value) {
+          const { error } = await supabase
+            .from('app_settings' as any)
+            .update({ value: settingsForm[setting.key] } as any)
+            .eq('key', setting.key);
+          if (error) throw error;
+        }
+      }
+      setSettings(prev => prev.map(s => ({ ...s, value: settingsForm[s.key] || s.value })));
+      toast({ title: 'Настройките са запазени' });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Грешка', description: error.message });
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
   // Module analytics
   const moduleStats = Object.keys(MODULE_NAMES).map(moduleId => {
     const moduleResults = quizResults.filter(q => q.module_id === moduleId);
@@ -264,6 +303,9 @@ const Admin = () => {
               </TabsTrigger>
               <TabsTrigger value="quizzes" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Trophy className="h-4 w-4 mr-2" /> Тестове
+              </TabsTrigger>
+              <TabsTrigger value="settings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Settings className="h-4 w-4 mr-2" /> Настройки
               </TabsTrigger>
             </TabsList>
 
@@ -498,6 +540,63 @@ const Admin = () => {
                       </TableBody>
                     </Table>
                   </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Settings Tab */}
+            <TabsContent value="settings">
+              <Card className="bg-card border-border cyber-border">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-primary" />
+                    Настройки на приложението
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="grid gap-4 max-w-md">
+                    <div className="space-y-2">
+                      <Label htmlFor="premium_price_cents">Цена Premium (EUR центове)</Label>
+                      <Input
+                        id="premium_price_cents"
+                        type="number"
+                        value={settingsForm['premium_price_cents'] || ''}
+                        onChange={(e) => setSettingsForm(prev => ({ ...prev, premium_price_cents: e.target.value }))}
+                        placeholder="299"
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        299 = 2.99€, 499 = 4.99€, 999 = 9.99€
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="premium_price_display_bg">Показвана цена (BG)</Label>
+                      <Input
+                        id="premium_price_display_bg"
+                        value={settingsForm['premium_price_display_bg'] || ''}
+                        onChange={(e) => setSettingsForm(prev => ({ ...prev, premium_price_display_bg: e.target.value }))}
+                        placeholder="2.99 €"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="premium_price_display_en">Показвана цена (EN)</Label>
+                      <Input
+                        id="premium_price_display_en"
+                        value={settingsForm['premium_price_display_en'] || ''}
+                        onChange={(e) => setSettingsForm(prev => ({ ...prev, premium_price_display_en: e.target.value }))}
+                        placeholder="€2.99"
+                      />
+                    </div>
+                  </div>
+
+                  <Button onClick={handleSaveSettings} disabled={savingSettings}>
+                    {savingSettings ? (
+                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Запазване...</>
+                    ) : (
+                      <><Save className="mr-2 h-4 w-4" /> Запази настройките</>
+                    )}
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>
