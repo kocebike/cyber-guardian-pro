@@ -6,6 +6,7 @@ import { Layout } from '@/components/layout/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
 import ModuleQuiz from '@/components/ModuleQuiz';
 import LearnMediaBlock from '@/components/LearnMediaBlock';
+import LearnAccessGate from '@/components/LearnAccessGate';
 import { quizData } from '@/data/quizData';
 import { 
   ArrowLeft, 
@@ -165,6 +166,7 @@ Recommended managers:
   };
 
   return (
+    <LearnAccessGate>
     <Layout>
       <div className="min-h-[calc(100vh-4rem)] py-12 px-4">
         <div className="container mx-auto max-w-4xl">
@@ -279,6 +281,7 @@ Recommended managers:
         </div>
       </div>
     </Layout>
+    </LearnAccessGate>
   );
 };
 

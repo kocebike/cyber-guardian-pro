@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Layout } from '@/components/layout/Layout';
 import { useLanguage } from '@/contexts/LanguageContext';
+import LearnAccessGate from '@/components/LearnAccessGate';
 import ModuleQuiz from '@/components/ModuleQuiz';
 import { quizData } from '@/data/quizData';
 import { 
@@ -194,6 +195,7 @@ If you've already become a victim:
   const currentContent = content[language as keyof typeof content] || content.bg;
 
   return (
+    <LearnAccessGate>
     <Layout>
       <div className="min-h-[calc(100vh-4rem)] py-12 px-4">
         <div className="container mx-auto max-w-4xl">
@@ -308,6 +310,7 @@ If you've already become a victim:
         </div>
       </div>
     </Layout>
+    </LearnAccessGate>
   );
 };
 
