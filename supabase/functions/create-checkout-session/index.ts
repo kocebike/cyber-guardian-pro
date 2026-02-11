@@ -45,6 +45,19 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
+    // Fetch price from app_settings
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+    const { data: priceSetting } = await supabaseAdmin
+      .from("app_settings")
+      .select("value")
+      .eq("key", "premium_price_cents")
+      .single();
+    
+    const unitAmount = priceSetting ? parseInt(priceSetting.value) : 299;
+
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -56,7 +69,7 @@ serve(async (req) => {
               name: "CyberShield Premium",
               description: "Пълен достъп до всички модули за киберсигурност",
             },
-            unit_amount: 1999, // 19.99 BGN in stotinki
+            unit_amount: unitAmount,
             recurring: { interval: "month" },
           },
           quantity: 1,

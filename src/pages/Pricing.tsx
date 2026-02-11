@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,11 +10,25 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
 const Pricing = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { user, isPremium } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [dynamicPrice, setDynamicPrice] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchPrice = async () => {
+      const key = language === 'en' ? 'premium_price_display_en' : 'premium_price_display_bg';
+      const { data } = await supabase
+        .from('app_settings' as any)
+        .select('value')
+        .eq('key', key)
+        .single();
+      if (data) setDynamicPrice((data as any).value);
+    };
+    fetchPrice();
+  }, [language]);
 
   const handleSubscribe = async () => {
     if (!user) {
@@ -132,7 +146,7 @@ const Pricing = () => {
                 </div>
                 <CardTitle className="text-2xl text-primary">{t('pricing.premium.title')}</CardTitle>
                 <CardDescription>
-                  <span className="text-4xl font-bold text-foreground">{t('pricing.premium.price')}</span>
+                  <span className="text-4xl font-bold text-foreground">{dynamicPrice || t('pricing.premium.price')}</span>
                   <span className="text-muted-foreground">{t('pricing.premium.period')}</span>
                 </CardDescription>
               </CardHeader>
