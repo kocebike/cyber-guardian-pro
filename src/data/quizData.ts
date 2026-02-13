@@ -99,4 +99,36 @@ export const quizData: QuizDataMap = {
       { question: 'Which is an example of "baiting"?', options: ['Phishing email', 'USB with enticing name in parking lot', 'Phone call', 'WiFi hacking'], correctIndex: 1 },
     ],
   },
+  'data-privacy': {
+    bg: [
+      { question: 'Какво ви дава право GDPR?', options: ['Безплатен интернет', 'Контрол над личните ви данни', 'Анонимност навсякъде', 'Безплатен VPN'], correctIndex: 1 },
+      { question: 'Кой браузър е фокусиран върху поверителност?', options: ['Chrome', 'Edge', 'Brave', 'Safari'], correctIndex: 2 },
+      { question: 'Какво е DSAR?', options: ['Вид вирус', 'Заявка за достъп до лични данни', 'Тип криптиране', 'Мрежов протокол'], correctIndex: 1 },
+      { question: 'За колко дни компанията трябва да отговори на DSAR?', options: ['7 дни', '14 дни', '30 дни', '90 дни'], correctIndex: 2 },
+      { question: 'Какво е "правото да бъдете забравени"?', options: ['Да изтриете паролата', 'Да поискате изтриване на данните ви', 'Да скриете профила', 'Да смените имейла'], correctIndex: 1 },
+    ],
+    en: [
+      { question: 'What does GDPR give you the right to?', options: ['Free internet', 'Control over your personal data', 'Anonymity everywhere', 'Free VPN'], correctIndex: 1 },
+      { question: 'Which browser is privacy-focused?', options: ['Chrome', 'Edge', 'Brave', 'Safari'], correctIndex: 2 },
+      { question: 'What is a DSAR?', options: ['A type of virus', 'Data Subject Access Request', 'A type of encryption', 'A network protocol'], correctIndex: 1 },
+      { question: 'How many days must a company respond to a DSAR?', options: ['7 days', '14 days', '30 days', '90 days'], correctIndex: 2 },
+      { question: 'What is the "right to be forgotten"?', options: ['Delete your password', 'Request deletion of your data', 'Hide your profile', 'Change your email'], correctIndex: 1 },
+    ],
+  },
+  'mobile-security': {
+    bg: [
+      { question: 'Какъв PIN код трябва да използвате?', options: ['4-цифрен', '6-цифрен', 'Без PIN', '3-цифрен'], correctIndex: 1 },
+      { question: 'Откъде трябва да инсталирате приложения?', options: ['Всеки сайт', 'Само официални магазини', 'Торент', 'Имейл прикачени'], correctIndex: 1 },
+      { question: 'Какво е "juice jacking"?', options: ['Кражба на сок', 'Атака чрез публични USB станции', 'Хакване на Wi-Fi', 'Тип фишинг'], correctIndex: 1 },
+      { question: 'Как да намерите IMEI номера?', options: ['В настройките', 'Наберете *#06#', 'В App Store', 'В браузъра'], correctIndex: 1 },
+      { question: 'Какво е SIM swapping?', options: ['Смяна на SIM карта', 'Хакер прехвърля номера ви', 'Нова SIM карта', 'Двойна SIM'], correctIndex: 1 },
+    ],
+    en: [
+      { question: 'What PIN code should you use?', options: ['4-digit', '6-digit', 'No PIN', '3-digit'], correctIndex: 1 },
+      { question: 'Where should you install apps from?', options: ['Any website', 'Only official stores', 'Torrent', 'Email attachments'], correctIndex: 1 },
+      { question: 'What is "juice jacking"?', options: ['Juice theft', 'Attack via public USB stations', 'Wi-Fi hacking', 'A type of phishing'], correctIndex: 1 },
+      { question: 'How to find your IMEI number?', options: ['In settings', 'Dial *#06#', 'In App Store', 'In browser'], correctIndex: 1 },
+      { question: 'What is SIM swapping?', options: ['Changing SIM card', 'Hacker transfers your number', 'New SIM card', 'Dual SIM'], correctIndex: 1 },
+    ],
+  },
 };

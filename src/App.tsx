@@ -17,6 +17,8 @@ import TwoFactorAuth from "./pages/learn/TwoFactorAuth";
 import NetworkSecurity from "./pages/learn/NetworkSecurity";
 import MalwareProtection from "./pages/learn/MalwareProtection";
 import SocialEngineering from "./pages/learn/SocialEngineering";
+import DataPrivacy from "./pages/learn/DataPrivacy";
+import MobileSecurity from "./pages/learn/MobileSecurity";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -42,6 +44,8 @@ const App = () => (
               <Route path="/learn/network-security" element={<NetworkSecurity />} />
               <Route path="/learn/malware-protection" element={<MalwareProtection />} />
               <Route path="/learn/social-engineering" element={<SocialEngineering />} />
+              <Route path="/learn/data-privacy" element={<DataPrivacy />} />
+              <Route path="/learn/mobile-security" element={<MobileSecurity />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

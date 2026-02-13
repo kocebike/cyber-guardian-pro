@@ -8,13 +8,14 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  Lock, Eye, Smartphone, Wifi, Bug, Users,
+  Lock, Eye, Smartphone, Wifi, Bug, Users, FileKey,
   Crown, CheckCircle, Circle, LockKeyhole, Trophy
 } from 'lucide-react';
 
 const ALL_MODULES = [
   'password-security', 'phishing-protection', '2fa-setup',
-  'network-security', 'malware-protection', 'social-engineering'
+  'network-security', 'malware-protection', 'social-engineering',
+  'data-privacy', 'mobile-security'
 ];
 
 const Dashboard = () => {
@@ -58,6 +59,8 @@ const Dashboard = () => {
     { id: 'network-security', icon: Wifi, title: t('features.network.title'), desc: t('features.network.desc'), color: 'text-cyber-yellow', bgColor: 'bg-cyber-yellow/10', premium: true },
     { id: 'malware-protection', icon: Bug, title: t('features.malware.title'), desc: t('features.malware.desc'), color: 'text-destructive', bgColor: 'bg-destructive/10', premium: true },
     { id: 'social-engineering', icon: Users, title: t('features.social.title'), desc: t('features.social.desc'), color: 'text-cyber-purple', bgColor: 'bg-cyber-purple/10', premium: true },
+    { id: 'data-privacy', icon: FileKey, title: t('features.privacy.title'), desc: t('features.privacy.desc'), color: 'text-accent', bgColor: 'bg-accent/10', premium: true },
+    { id: 'mobile-security', icon: Smartphone, title: t('features.mobile.title'), desc: t('features.mobile.desc'), color: 'text-secondary', bgColor: 'bg-secondary/10', premium: true },
   ];
 
   const completedCount = modules.filter(m => completedModules.has(m.id)).length;
