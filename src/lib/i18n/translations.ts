@@ -31,6 +31,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'features.malware.desc': 'Предпазете се от вируси, троянски коне и рансъмуер',
     'features.social.title': 'Социално инженерство',
     'features.social.desc': 'Разберете как хакерите манипулират хората и се защитете',
+    'features.privacy.title': 'Поверителност на данните',
+    'features.privacy.desc': 'Защитете личната си информация в дигиталния свят',
+    'features.mobile.title': 'Мобилна сигурност',
+    'features.mobile.desc': 'Защитете вашия смартфон и таблет от заплахи',
     
     // Pricing
     'pricing.title': 'Изберете вашия план',
@@ -87,6 +91,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'content.premium.title': 'Premium съдържание',
     'content.premium.desc': 'Този урок е достъпен само за Premium потребители',
     'content.premium.cta': 'Надградете до Premium',
+    'content.login.title': 'Влезте в акаунта си',
+    'content.login.desc': 'Трябва да влезете в акаунта си, за да видите това съдържание.',
     
     // Admin
     'admin.title': 'Администраторски панел',
@@ -141,6 +147,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'features.malware.desc': 'Protect yourself from viruses, trojans and ransomware',
     'features.social.title': 'Social Engineering',
     'features.social.desc': 'Understand how hackers manipulate people and protect yourself',
+    'features.privacy.title': 'Data Privacy',
+    'features.privacy.desc': 'Protect your personal information in the digital world',
+    'features.mobile.title': 'Mobile Security',
+    'features.mobile.desc': 'Protect your smartphone and tablet from threats',
     
     // Pricing
     'pricing.title': 'Choose Your Plan',
@@ -197,6 +207,8 @@ export const translations: Record<Language, Record<string, string>> = {
     'content.premium.title': 'Premium Content',
     'content.premium.desc': 'This lesson is only available for Premium users',
     'content.premium.cta': 'Upgrade to Premium',
+    'content.login.title': 'Sign in to your account',
+    'content.login.desc': 'You need to sign in to your account to view this content.',
     
     // Admin
     'admin.title': 'Admin Panel',
