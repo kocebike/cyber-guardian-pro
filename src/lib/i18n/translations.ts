@@ -35,6 +35,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'features.privacy.desc': 'Защитете личната си информация в дигиталния свят',
     'features.mobile.title': 'Мобилна сигурност',
     'features.mobile.desc': 'Защитете вашия смартфон и таблет от заплахи',
+    'features.cloud.title': 'Облачна сигурност',
+    'features.cloud.desc': 'Защитете данните си в облачните услуги',
+    'features.email.title': 'Сигурност на имейла',
+    'features.email.desc': 'Защитете електронната си поща от атаки',
     
     // Pricing
     'pricing.title': 'Изберете вашия план',
@@ -151,6 +155,10 @@ export const translations: Record<Language, Record<string, string>> = {
     'features.privacy.desc': 'Protect your personal information in the digital world',
     'features.mobile.title': 'Mobile Security',
     'features.mobile.desc': 'Protect your smartphone and tablet from threats',
+    'features.cloud.title': 'Cloud Security',
+    'features.cloud.desc': 'Protect your data in cloud services',
+    'features.email.title': 'Email Security',
+    'features.email.desc': 'Protect your email from attacks and abuse',
     
     // Pricing
     'pricing.title': 'Choose Your Plan',

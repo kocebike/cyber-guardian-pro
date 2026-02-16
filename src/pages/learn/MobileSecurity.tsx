@@ -149,6 +149,7 @@ const MobileSecurity = () => {
       colorClass="secondary"
       content={currentContent}
       prevLink="/learn/data-privacy"
+      nextLink="/learn/cloud-security"
     />
   );
 };
