@@ -8,14 +8,15 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { 
-  Lock, Eye, Smartphone, Wifi, Bug, Users, FileKey,
+  Lock, Eye, Smartphone, Wifi, Bug, Users, FileKey, Cloud, Mail,
   Crown, CheckCircle, Circle, LockKeyhole, Trophy
 } from 'lucide-react';
+import CertificateGenerator from '@/components/CertificateGenerator';
 
 const ALL_MODULES = [
   'password-security', 'phishing-protection', '2fa-setup',
   'network-security', 'malware-protection', 'social-engineering',
-  'data-privacy', 'mobile-security'
+  'data-privacy', 'mobile-security', 'cloud-security', 'email-security'
 ];
 
 const Dashboard = () => {
@@ -61,6 +62,8 @@ const Dashboard = () => {
     { id: 'social-engineering', icon: Users, title: t('features.social.title'), desc: t('features.social.desc'), color: 'text-cyber-purple', bgColor: 'bg-cyber-purple/10', premium: true },
     { id: 'data-privacy', icon: FileKey, title: t('features.privacy.title'), desc: t('features.privacy.desc'), color: 'text-accent', bgColor: 'bg-accent/10', premium: true },
     { id: 'mobile-security', icon: Smartphone, title: t('features.mobile.title'), desc: t('features.mobile.desc'), color: 'text-secondary', bgColor: 'bg-secondary/10', premium: true },
+    { id: 'cloud-security', icon: Cloud, title: t('features.cloud.title'), desc: t('features.cloud.desc'), color: 'text-primary', bgColor: 'bg-primary/10', premium: true },
+    { id: 'email-security', icon: Mail, title: t('features.email.title'), desc: t('features.email.desc'), color: 'text-cyber-yellow', bgColor: 'bg-cyber-yellow/10', premium: true },
   ];
 
   const completedCount = modules.filter(m => completedModules.has(m.id)).length;
@@ -184,6 +187,11 @@ const Dashboard = () => {
                 );
               })}
             </div>
+          </div>
+
+          {/* Certificate Section */}
+          <div className="mt-8">
+            <CertificateGenerator />
           </div>
 
           {!isPremium && (

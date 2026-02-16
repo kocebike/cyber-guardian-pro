@@ -131,4 +131,36 @@ export const quizData: QuizDataMap = {
       { question: 'What is SIM swapping?', options: ['Changing SIM card', 'Hacker transfers your number', 'New SIM card', 'Dual SIM'], correctIndex: 1 },
     ],
   },
+  'cloud-security': {
+    bg: [
+      { question: 'Какъв процент от облачните пробиви ще са по вина на потребителя до 2025?', options: ['50%', '75%', '99%', '85%'], correctIndex: 2 },
+      { question: 'Какво означава "споделена отговорност" в облака?', options: ['Всички имат достъп', 'Облакът и потребителят споделят сигурността', 'Безплатна услуга', 'Няма защита'], correctIndex: 1 },
+      { question: 'Какво е Shadow IT?', options: ['Тъмна тема', 'Неодобрени облачни услуги от служители', 'Вид вирус', 'Тип криптиране'], correctIndex: 1 },
+      { question: 'Какво е правилото 3-2-1 за бекъпи?', options: ['3 пароли, 2 имейла, 1 VPN', '3 копия, 2 носителя, 1 офлайн', '3 облака, 2 сървъра, 1 компютър', '3 дни, 2 часа, 1 минута'], correctIndex: 1 },
+      { question: 'Какъв принцип трябва да следвате за достъп?', options: ['Максимален достъп', 'Минимален достъп', 'Споделен достъп', 'Публичен достъп'], correctIndex: 1 },
+    ],
+    en: [
+      { question: 'What percentage of cloud breaches will be the user\'s fault by 2025?', options: ['50%', '75%', '99%', '85%'], correctIndex: 2 },
+      { question: 'What does "shared responsibility" mean in the cloud?', options: ['Everyone has access', 'Cloud and user share security', 'Free service', 'No protection'], correctIndex: 1 },
+      { question: 'What is Shadow IT?', options: ['Dark theme', 'Unapproved cloud services by employees', 'A type of virus', 'A type of encryption'], correctIndex: 1 },
+      { question: 'What is the 3-2-1 backup rule?', options: ['3 passwords, 2 emails, 1 VPN', '3 copies, 2 media, 1 offline', '3 clouds, 2 servers, 1 computer', '3 days, 2 hours, 1 minute'], correctIndex: 1 },
+      { question: 'What access principle should you follow?', options: ['Maximum access', 'Least privilege', 'Shared access', 'Public access'], correctIndex: 1 },
+    ],
+  },
+  'email-security': {
+    bg: [
+      { question: 'Какъв процент от атаките започват с имейл?', options: ['50%', '71%', '91%', '30%'], correctIndex: 2 },
+      { question: 'Какво е BEC?', options: ['Вид антивирус', 'Business Email Compromise', 'Браузър разширение', 'Тип криптиране'], correctIndex: 1 },
+      { question: 'Какъв минимален брой символи трябва да има паролата за имейл?', options: ['8', '10', '12', '16'], correctIndex: 3 },
+      { question: 'Какво е email spoofing?', options: ['Криптиран имейл', 'Фалшифициран адрес на подателя', 'Спам филтър', 'Имейл архив'], correctIndex: 1 },
+      { question: 'Кой сайт може да се ползва за проверка на подозрителни файлове?', options: ['Google', 'VirusTotal', 'Facebook', 'Wikipedia'], correctIndex: 1 },
+    ],
+    en: [
+      { question: 'What percentage of attacks start with email?', options: ['50%', '71%', '91%', '30%'], correctIndex: 2 },
+      { question: 'What is BEC?', options: ['A type of antivirus', 'Business Email Compromise', 'Browser extension', 'A type of encryption'], correctIndex: 1 },
+      { question: 'Minimum characters for an email password?', options: ['8', '10', '12', '16'], correctIndex: 3 },
+      { question: 'What is email spoofing?', options: ['Encrypted email', 'Forged sender address', 'Spam filter', 'Email archive'], correctIndex: 1 },
+      { question: 'Which site can check suspicious files?', options: ['Google', 'VirusTotal', 'Facebook', 'Wikipedia'], correctIndex: 1 },
+    ],
+  },
 };
