@@ -66,13 +66,6 @@ const ModuleQuiz = ({ moduleId, questions, passingScore = 70 }: ModuleQuizProps)
     }
   };
 
-  const handlePrev = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(currentQuestion - 1);
-      setSelectedAnswer(answers[currentQuestion - 1]);
-      setSubmitted(false);
-    }
-  };
 
   const handleSubmitAnswer = () => {
     setSubmitted(true);
@@ -271,16 +264,7 @@ const ModuleQuiz = ({ moduleId, questions, passingScore = 70 }: ModuleQuizProps)
           })}
         </div>
 
-        <div className="flex justify-between items-center">
-          <Button
-            variant="outline"
-            onClick={handlePrev}
-            disabled={currentQuestion === 0}
-            className="border-border"
-          >
-            {isBg ? '← Назад' : '← Back'}
-          </Button>
-
+        <div className="flex justify-end items-center">
           <div className="flex gap-2">
             {!submitted && selectedAnswer !== null && (
               <Button onClick={handleSubmitAnswer} className="bg-secondary text-secondary-foreground hover:bg-secondary/90">

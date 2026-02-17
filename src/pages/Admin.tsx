@@ -16,7 +16,7 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   Users, CreditCard, TrendingUp, Shield, Loader2, 
   BarChart3, Trophy, UserX, UserCheck, Crown,
-  BookOpen, CheckCircle, XCircle, Settings, Save
+  BookOpen, CheckCircle, XCircle, Settings, Save, Award, Pencil
 } from 'lucide-react';
 
 interface Profile {
@@ -51,6 +51,14 @@ interface QuizResult {
   completed_at: string;
 }
 
+interface DiplomaRecord {
+  id: string;
+  user_id: string;
+  full_name: string;
+  cert_id: string;
+  created_at: string;
+}
+
 interface AppSetting {
   id: string;
   key: string;
@@ -76,6 +84,9 @@ const Admin = () => {
   const [roles, setRoles] = useState<UserRole[]>([]);
   const [quizResults, setQuizResults] = useState<QuizResult[]>([]);
   const [settings, setSettings] = useState<AppSetting[]>([]);
+  const [diplomas, setDiplomas] = useState<DiplomaRecord[]>([]);
+  const [editingDiploma, setEditingDiploma] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
   const [settingsForm, setSettingsForm] = useState<Record<string, string>>({});
   const [savingSettings, setSavingSettings] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -85,18 +96,20 @@ const Admin = () => {
       if (!isAdmin) return;
 
       try {
-        const [profilesRes, subscriptionsRes, rolesRes, quizRes, settingsRes] = await Promise.all([
+        const [profilesRes, subscriptionsRes, rolesRes, quizRes, settingsRes, diplomasRes] = await Promise.all([
           supabase.from('profiles').select('*').order('created_at', { ascending: false }),
           supabase.from('user_subscriptions').select('*'),
           supabase.from('user_roles').select('*'),
           supabase.from('quiz_results').select('*').order('completed_at', { ascending: false }),
           supabase.from('app_settings').select('*'),
+          supabase.from('diplomas').select('*').order('created_at', { ascending: false }),
         ]);
 
         setProfiles(profilesRes.data || []);
         setSubscriptions(subscriptionsRes.data || []);
         setRoles(rolesRes.data || []);
         setQuizResults(quizRes.data || []);
+        setDiplomas((diplomasRes.data || []) as unknown as DiplomaRecord[]);
         const fetchedSettings = (settingsRes.data || []) as unknown as AppSetting[];
         setSettings(fetchedSettings);
         const form: Record<string, string> = {};
@@ -218,6 +231,21 @@ const Admin = () => {
     }
   };
 
+  const handleDiplomaNameUpdate = async (diplomaId: string, newName: string) => {
+    try {
+      const { error } = await supabase
+        .from('diplomas')
+        .update({ full_name: newName } as any)
+        .eq('id', diplomaId);
+      if (error) throw error;
+      setDiplomas(prev => prev.map(d => d.id === diplomaId ? { ...d, full_name: newName } : d));
+      setEditingDiploma(null);
+      toast({ title: 'Името е обновено' });
+    } catch (error: any) {
+      toast({ variant: 'destructive', title: 'Грешка', description: error.message });
+    }
+  };
+
   // Module analytics
   const moduleStats = Object.keys(MODULE_NAMES).map(moduleId => {
     const moduleResults = quizResults.filter(q => q.module_id === moduleId);
@@ -303,6 +331,9 @@ const Admin = () => {
               </TabsTrigger>
               <TabsTrigger value="quizzes" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Trophy className="h-4 w-4 mr-2" /> Тестове
+              </TabsTrigger>
+              <TabsTrigger value="diplomas" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
+                <Award className="h-4 w-4 mr-2" /> Дипломи
               </TabsTrigger>
               <TabsTrigger value="settings" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
                 <Settings className="h-4 w-4 mr-2" /> Настройки
@@ -534,6 +565,82 @@ const Admin = () => {
                           <TableRow>
                             <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
                               Няма резултати от тестове
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Diplomas Tab */}
+            <TabsContent value="diplomas">
+              <Card className="bg-card border-border cyber-border">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Award className="h-5 w-5 text-primary" />
+                    Управление на дипломи
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="border-border">
+                          <TableHead>Потребител</TableHead>
+                          <TableHead>Име на дипломата</TableHead>
+                          <TableHead>Cert ID</TableHead>
+                          <TableHead>Дата</TableHead>
+                          <TableHead>Действия</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {diplomas.map((diploma) => {
+                          const profile = profiles.find(p => p.user_id === diploma.user_id);
+                          return (
+                            <TableRow key={diploma.id} className="border-border">
+                              <TableCell className="font-mono text-sm">{profile?.email || diploma.user_id.slice(0, 8)}</TableCell>
+                              <TableCell>
+                                {editingDiploma === diploma.id ? (
+                                  <div className="flex items-center gap-2">
+                                    <Input
+                                      value={editName}
+                                      onChange={(e) => setEditName(e.target.value)}
+                                      className="h-8 w-48"
+                                    />
+                                    <Button size="sm" onClick={() => handleDiplomaNameUpdate(diploma.id, editName)}>
+                                      <Save className="h-3 w-3" />
+                                    </Button>
+                                    <Button size="sm" variant="outline" onClick={() => setEditingDiploma(null)}>
+                                      ✕
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <span className="font-medium">{diploma.full_name}</span>
+                                )}
+                              </TableCell>
+                              <TableCell className="font-mono text-xs text-muted-foreground">{diploma.cert_id}</TableCell>
+                              <TableCell className="text-sm text-muted-foreground">
+                                {new Date(diploma.created_at).toLocaleDateString('bg-BG')}
+                              </TableCell>
+                              <TableCell>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => { setEditingDiploma(diploma.id); setEditName(diploma.full_name); }}
+                                >
+                                  <Pencil className="h-3 w-3 mr-1" /> Редактирай
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                        {diplomas.length === 0 && (
+                          <TableRow>
+                            <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                              Няма издадени дипломи
                             </TableCell>
                           </TableRow>
                         )}

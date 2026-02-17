@@ -41,6 +41,30 @@ export type Database = {
         }
         Relationships: []
       }
+      diplomas: {
+        Row: {
+          cert_id: string
+          created_at: string
+          full_name: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          cert_id: string
+          created_at?: string
+          full_name: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          cert_id?: string
+          created_at?: string
+          full_name?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
