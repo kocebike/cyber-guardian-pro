@@ -132,6 +132,7 @@ const NetworkSecurity = () => {
       icon={Wifi}
       colorClass="cyber-yellow"
       content={currentContent}
+      isPremium={false}
       prevLink="/learn/2fa-setup"
       nextLink="/learn/malware-protection"
     />
