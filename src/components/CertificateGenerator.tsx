@@ -52,6 +52,12 @@ async function loadFont(url: string): Promise<string> {
   return btoa(binary);
 }
 
+interface DiplomaRecord {
+  full_name: string;
+  cert_id: string;
+  created_at: string;
+}
+
 const CertificateGenerator = () => {
   const { user } = useAuth();
   const { language } = useLanguage();
@@ -59,48 +65,50 @@ const CertificateGenerator = () => {
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const [diploma, setDiploma] = useState<DiplomaRecord | null>(null);
 
   const isBg = language === 'bg';
 
   useEffect(() => {
     if (!user) return;
-    supabase
-      .from('quiz_results')
-      .select('module_id')
-      .eq('user_id', user.id)
-      .eq('passed', true)
-      .then(({ data }) => {
-        if (data) setCompletedModules(new Set(data.map(r => r.module_id)));
-        setLoading(false);
-      });
+    Promise.all([
+      supabase
+        .from('quiz_results')
+        .select('module_id')
+        .eq('user_id', user.id)
+        .eq('passed', true),
+      supabase
+        .from('diplomas')
+        .select('full_name, cert_id, created_at')
+        .eq('user_id', user.id)
+        .limit(1)
+        .single(),
+    ]).then(([quizRes, diplomaRes]) => {
+      if (quizRes.data) setCompletedModules(new Set(quizRes.data.map(r => r.module_id)));
+      if (diplomaRes.data) setDiploma(diplomaRes.data as DiplomaRecord);
+      setLoading(false);
+    });
   }, [user]);
 
   const allCompleted = ALL_MODULES.every(m => completedModules.has(m));
   const completedCount = ALL_MODULES.filter(m => completedModules.has(m)).length;
 
-  const generatePDF = async () => {
-    if (!fullName.trim()) return;
+  const generateAndDownloadPDF = async (name: string, certId: string, createdAt: string) => {
     setGenerating(true);
-
     try {
-      // Load fonts with Cyrillic support
       const [regularBase64, boldBase64] = await Promise.all([
         loadFont('/fonts/Roboto-Regular.ttf'),
         loadFont('/fonts/Roboto-Bold.ttf'),
       ]);
 
       const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-      // Register fonts
       doc.addFileToVFS('Roboto-Regular.ttf', regularBase64);
       doc.addFont('Roboto-Regular.ttf', 'Roboto', 'normal');
       doc.addFileToVFS('Roboto-Bold.ttf', boldBase64);
       doc.addFont('Roboto-Bold.ttf', 'Roboto', 'bold');
-
       doc.setFont('Roboto', 'normal');
 
-      const w = 297;
-      const h = 210;
+      const w = 297, h = 210;
 
       // Background
       doc.setFillColor(15, 23, 42);
@@ -128,7 +136,6 @@ const CertificateGenerator = () => {
 
       const cx = w / 2;
 
-      // Title
       doc.setFont('Roboto', 'normal');
       doc.setFontSize(14);
       doc.setTextColor(0, 255, 136);
@@ -139,29 +146,24 @@ const CertificateGenerator = () => {
       doc.setTextColor(255, 255, 255);
       doc.text(isBg ? 'ДИПЛОМА ЗА КИБЕРСИГУРНОСТ' : 'CYBERSECURITY DIPLOMA', cx, 72, { align: 'center' });
 
-      // Decorative line
       doc.setDrawColor(0, 255, 136);
       doc.setLineWidth(0.8);
       doc.line(cx - 60, 78, cx + 60, 78);
 
-      // "Awarded to"
       doc.setFont('Roboto', 'normal');
       doc.setFontSize(12);
       doc.setTextColor(148, 163, 184);
       doc.text(isBg ? 'Присъдена на' : 'Awarded to', cx, 92, { align: 'center' });
 
-      // Name
       doc.setFont('Roboto', 'bold');
       doc.setFontSize(28);
       doc.setTextColor(0, 255, 136);
-      doc.text(fullName.trim(), cx, 108, { align: 'center' });
+      doc.text(name, cx, 108, { align: 'center' });
 
-      // Decorative line under name
       doc.setLineWidth(0.5);
       doc.setDrawColor(0, 255, 136);
       doc.line(cx - 50, 114, cx + 50, 114);
 
-      // Description
       doc.setFont('Roboto', 'normal');
       doc.setFontSize(11);
       doc.setTextColor(203, 213, 225);
@@ -169,36 +171,30 @@ const CertificateGenerator = () => {
         ? 'За успешно завършване на всички модули по киберсигурност'
         : 'For successfully completing all cybersecurity modules';
       doc.text(desc, cx, 127, { align: 'center' });
-
       const desc2 = isBg
         ? `и преминаване на ${ALL_MODULES.length} теста с успех`
         : `and passing all ${ALL_MODULES.length} quizzes successfully`;
       doc.text(desc2, cx, 135, { align: 'center' });
 
-      // Modules list
       doc.setFontSize(8);
       doc.setTextColor(100, 116, 139);
       const names = isBg ? MODULE_NAMES_BG : MODULE_NAMES_EN;
-      const moduleList = ALL_MODULES.map(m => names[m] || m).join('  \u2022  ');
+      const moduleList = ALL_MODULES.map(m => names[m] || m).join('  •  ');
       doc.text(moduleList, cx, 148, { align: 'center' });
 
-      // Date and ID
-      const date = new Date().toLocaleDateString(isBg ? 'bg-BG' : 'en-US', {
+      const date = new Date(createdAt).toLocaleDateString(isBg ? 'bg-BG' : 'en-US', {
         year: 'numeric', month: 'long', day: 'numeric'
       });
-      const certId = `CS-${Date.now().toString(36).toUpperCase()}`;
 
       doc.setFontSize(10);
       doc.setTextColor(148, 163, 184);
       doc.text(isBg ? `Дата: ${date}` : `Date: ${date}`, cx - 50, 168, { align: 'center' });
       doc.text(`ID: ${certId}`, cx + 50, 168, { align: 'center' });
 
-      // Footer
       doc.setFontSize(9);
       doc.setTextColor(71, 85, 105);
       doc.text('CyberShield Academy', cx, 185, { align: 'center' });
 
-      // Hex pattern decorations
       doc.setDrawColor(30, 50, 70);
       doc.setLineWidth(0.2);
       for (let i = 0; i < 6; i++) {
@@ -212,6 +208,26 @@ const CertificateGenerator = () => {
     } catch (error) {
       console.error('Error generating PDF:', error);
     } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleFirstGenerate = async () => {
+    if (!fullName.trim() || !user) return;
+    setGenerating(true);
+    const certId = `CS-${Date.now().toString(36).toUpperCase()}`;
+    try {
+      const { error } = await supabase.from('diplomas').insert({
+        user_id: user.id,
+        full_name: fullName.trim(),
+        cert_id: certId,
+      });
+      if (error) throw error;
+      const now = new Date().toISOString();
+      setDiploma({ full_name: fullName.trim(), cert_id: certId, created_at: now });
+      await generateAndDownloadPDF(fullName.trim(), certId, now);
+    } catch (error) {
+      console.error('Error saving diploma:', error);
       setGenerating(false);
     }
   };
@@ -257,11 +273,45 @@ const CertificateGenerator = () => {
           })}
         </div>
 
-        {allCompleted ? (
+        {diploma ? (
+          /* Already generated — can only re-download */
+          <div className="space-y-4">
+            <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+              <p className="text-primary font-medium text-sm mb-1">
+                ✅ {isBg ? 'Дипломата е издадена на:' : 'Diploma issued to:'}
+              </p>
+              <p className="text-lg font-bold">{diploma.full_name}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                ID: {diploma.cert_id} • {new Date(diploma.created_at).toLocaleDateString(isBg ? 'bg-BG' : 'en-US')}
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                {isBg
+                  ? 'Ако искате да промените името, свържете се с администратор.'
+                  : 'To change the name, contact an administrator.'}
+              </p>
+            </div>
+            <Button
+              onClick={() => generateAndDownloadPDF(diploma.full_name, diploma.cert_id, diploma.created_at)}
+              disabled={generating}
+              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+              size="lg"
+            >
+              <Download className="mr-2 h-5 w-5" />
+              {generating
+                ? (isBg ? 'Генериране...' : 'Generating...')
+                : (isBg ? 'Изтегли дипломата (PDF)' : 'Download Diploma (PDF)')}
+            </Button>
+          </div>
+        ) : allCompleted ? (
           <div className="space-y-4">
             <div className="p-4 rounded-xl bg-primary/5 border border-primary/20">
               <p className="text-primary font-medium text-sm mb-3">
                 🎉 {isBg ? 'Поздравления! Завършихте всички модули!' : 'Congratulations! You completed all modules!'}
+              </p>
+              <p className="text-xs text-muted-foreground mb-3">
+                ⚠️ {isBg
+                  ? 'Внимание: Името не може да бъде променено след генериране на дипломата.'
+                  : 'Warning: The name cannot be changed after generating the diploma.'}
               </p>
               <div className="space-y-2">
                 <Label htmlFor="fullName" className="text-sm">
@@ -277,7 +327,7 @@ const CertificateGenerator = () => {
               </div>
             </div>
             <Button
-              onClick={generatePDF}
+              onClick={handleFirstGenerate}
               disabled={!fullName.trim() || generating}
               className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
               size="lg"
@@ -285,7 +335,7 @@ const CertificateGenerator = () => {
               <Download className="mr-2 h-5 w-5" />
               {generating
                 ? (isBg ? 'Генериране...' : 'Generating...')
-                : (isBg ? 'Изтегли дипломата (PDF)' : 'Download Diploma (PDF)')}
+                : (isBg ? 'Генерирай и изтегли дипломата' : 'Generate & Download Diploma')}
             </Button>
           </div>
         ) : (

@@ -66,7 +66,7 @@ const LearnModulePage = ({
   const moduleQuizData = quizData[moduleId as keyof typeof quizData];
 
   return (
-    <LearnAccessGate>
+    <LearnAccessGate requirePremium={isPremium}>
       <Layout>
         <div className="min-h-[calc(100vh-4rem)] py-12 px-4">
           <div className="container mx-auto max-w-4xl">
