@@ -140,6 +140,7 @@ Rule: If there's a 2FA option - TURN IT ON!` },
       icon={Smartphone}
       colorClass="accent"
       content={currentContent}
+      isPremium={false}
       prevLink="/learn/phishing-protection"
       nextLink="/learn/network-security"
     />
