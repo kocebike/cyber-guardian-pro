@@ -56,8 +56,8 @@ const Dashboard = () => {
   const modules = [
     { id: 'password-security', icon: Lock, title: t('features.password.title'), desc: t('features.password.desc'), color: 'text-primary', bgColor: 'bg-primary/10', premium: false },
     { id: 'phishing-protection', icon: Eye, title: t('features.phishing.title'), desc: t('features.phishing.desc'), color: 'text-secondary', bgColor: 'bg-secondary/10', premium: false },
-    { id: '2fa-setup', icon: Smartphone, title: t('features.2fa.title'), desc: t('features.2fa.desc'), color: 'text-accent', bgColor: 'bg-accent/10', premium: true },
-    { id: 'network-security', icon: Wifi, title: t('features.network.title'), desc: t('features.network.desc'), color: 'text-cyber-yellow', bgColor: 'bg-cyber-yellow/10', premium: true },
+    { id: '2fa-setup', icon: Smartphone, title: t('features.2fa.title'), desc: t('features.2fa.desc'), color: 'text-accent', bgColor: 'bg-accent/10', premium: false },
+    { id: 'network-security', icon: Wifi, title: t('features.network.title'), desc: t('features.network.desc'), color: 'text-cyber-yellow', bgColor: 'bg-cyber-yellow/10', premium: false },
     { id: 'malware-protection', icon: Bug, title: t('features.malware.title'), desc: t('features.malware.desc'), color: 'text-destructive', bgColor: 'bg-destructive/10', premium: true },
     { id: 'social-engineering', icon: Users, title: t('features.social.title'), desc: t('features.social.desc'), color: 'text-cyber-purple', bgColor: 'bg-cyber-purple/10', premium: true },
     { id: 'data-privacy', icon: FileKey, title: t('features.privacy.title'), desc: t('features.privacy.desc'), color: 'text-accent', bgColor: 'bg-accent/10', premium: true },
