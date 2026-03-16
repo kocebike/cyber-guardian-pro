@@ -20,7 +20,7 @@ const ForgotPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [step, setStep] = useState<'email' | 'code' | 'done'>('email');
+  const [step, setStep] = useState<'email' | 'code' | 'password' | 'done'>('email');
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,30 +37,18 @@ const ForgotPassword = () => {
       setStep('code');
       toast({
         title: t('common.success'),
-        description: t('auth.forgot.codeSent') || 'Код за възстановяване е изпратен на вашия имейл.',
+        description: t('auth.forgot.codeSent'),
       });
     }
 
     setLoading(false);
   };
 
-  const handleVerifyAndReset = async (e: React.FormEvent) => {
+  const handleVerifyCode = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (newPassword !== confirmPassword) {
-      setError(t('auth.forgot.mismatch') || 'Паролите не съвпадат');
-      return;
-    }
-
-    if (newPassword.length < 6) {
-      setError(t('auth.forgot.tooShort') || 'Паролата трябва да е поне 6 символа');
-      return;
-    }
-
     setLoading(true);
 
-    // Verify OTP
     const { error: verifyError } = await supabase.auth.verifyOtp({
       email,
       token: otp,
@@ -69,11 +57,29 @@ const ForgotPassword = () => {
 
     if (verifyError) {
       setError(verifyError.message);
-      setLoading(false);
+    } else {
+      setStep('password');
+    }
+
+    setLoading(false);
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    if (newPassword !== confirmPassword) {
+      setError(t('auth.forgot.mismatch'));
       return;
     }
 
-    // Update password
+    if (newPassword.length < 6) {
+      setError(t('auth.forgot.tooShort'));
+      return;
+    }
+
+    setLoading(true);
+
     const { error: updateError } = await supabase.auth.updateUser({
       password: newPassword,
     });
@@ -82,9 +88,11 @@ const ForgotPassword = () => {
       setError(updateError.message);
     } else {
       setStep('done');
+      // Sign out so user logs in fresh with new password
+      await supabase.auth.signOut();
       toast({
         title: t('common.success'),
-        description: t('auth.forgot.success') || 'Паролата е сменена успешно!',
+        description: t('auth.forgot.success'),
       });
     }
 
@@ -101,16 +109,16 @@ const ForgotPassword = () => {
                 <CheckCircle className="h-16 w-16 text-primary cyber-glow-text" />
               </div>
               <CardTitle className="text-2xl font-bold">
-                {t('auth.forgot.doneTitle') || 'Паролата е сменена!'}
+                {t('auth.forgot.doneTitle')}
               </CardTitle>
               <CardDescription className="text-muted-foreground mt-4">
-                {t('auth.forgot.doneDesc') || 'Вече можете да влезете с новата си парола.'}
+                {t('auth.forgot.doneDesc')}
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center">
               <Link to="/login">
                 <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
-                  {t('auth.login.submit') || 'Вход'}
+                  {t('auth.login.submit')}
                 </Button>
               </Link>
             </CardContent>
@@ -129,18 +137,18 @@ const ForgotPassword = () => {
               <Shield className="h-12 w-12 text-primary cyber-glow-text" />
             </div>
             <CardTitle className="text-2xl font-bold">
-              {t('auth.forgot.title') || 'Забравена парола'}
+              {t('auth.forgot.title')}
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              {step === 'email'
-                ? (t('auth.forgot.emailDesc') || 'Въведете имейла си, за да получите код за възстановяване')
-                : (t('auth.forgot.codeDesc') || 'Въведете кода от имейла и новата си парола')
-              }
+              {step === 'email' && t('auth.forgot.emailDesc')}
+              {step === 'code' && t('auth.forgot.codeDesc')}
+              {step === 'password' && t('auth.forgot.passwordDesc')}
             </CardDescription>
           </CardHeader>
 
           <CardContent>
-            {step === 'email' ? (
+            {/* Step 1: Enter email */}
+            {step === 'email' && (
               <form onSubmit={handleSendCode} className="space-y-4">
                 {error && (
                   <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
@@ -150,7 +158,7 @@ const ForgotPassword = () => {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t('auth.login.email') || 'Имейл адрес'}</Label>
+                  <Label htmlFor="email">{t('auth.login.email')}</Label>
                   <Input
                     id="email"
                     type="email"
@@ -173,12 +181,15 @@ const ForgotPassword = () => {
                       {t('common.loading')}
                     </>
                   ) : (
-                    t('auth.forgot.sendCode') || 'Изпрати код'
+                    t('auth.forgot.sendCode')
                   )}
                 </Button>
               </form>
-            ) : (
-              <form onSubmit={handleVerifyAndReset} className="space-y-4">
+            )}
+
+            {/* Step 2: Enter OTP code */}
+            {step === 'code' && (
+              <form onSubmit={handleVerifyCode} className="space-y-4">
                 {error && (
                   <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
                     <AlertCircle className="h-4 w-4 flex-shrink-0" />
@@ -187,20 +198,58 @@ const ForgotPassword = () => {
                 )}
 
                 <div className="space-y-2">
-                  <Label htmlFor="otp">{t('auth.forgot.codeLabel') || 'Код от имейла'}</Label>
+                  <Label htmlFor="otp">{t('auth.forgot.codeLabel')}</Label>
                   <Input
                     id="otp"
                     type="text"
                     value={otp}
                     onChange={(e) => setOtp(e.target.value)}
                     placeholder="123456"
-                    className="bg-muted border-border focus:border-primary text-center text-lg font-mono tracking-widest"
+                    className="bg-muted border-border focus:border-primary text-center text-2xl font-mono tracking-[0.5em]"
+                    maxLength={6}
                     required
                   />
                 </div>
 
+                <Button
+                  type="submit"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 cyber-glow"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      {t('common.loading')}
+                    </>
+                  ) : (
+                    t('auth.forgot.verifyCode')
+                  )}
+                </Button>
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  className="w-full text-muted-foreground"
+                  onClick={() => { setStep('email'); setError(''); setOtp(''); }}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  {t('auth.forgot.resend')}
+                </Button>
+              </form>
+            )}
+
+            {/* Step 3: Set new password */}
+            {step === 'password' && (
+              <form onSubmit={handleResetPassword} className="space-y-4">
+                {error && (
+                  <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-destructive text-sm">
+                    <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                    {error}
+                  </div>
+                )}
+
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword">{t('auth.forgot.newPassword') || 'Нова парола'}</Label>
+                  <Label htmlFor="newPassword">{t('auth.forgot.newPassword')}</Label>
                   <Input
                     id="newPassword"
                     type="password"
@@ -213,7 +262,7 @@ const ForgotPassword = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">{t('auth.signup.confirmPassword') || 'Потвърдете паролата'}</Label>
+                  <Label htmlFor="confirmPassword">{t('auth.signup.confirmPassword')}</Label>
                   <Input
                     id="confirmPassword"
                     type="password"
@@ -236,25 +285,15 @@ const ForgotPassword = () => {
                       {t('common.loading')}
                     </>
                   ) : (
-                    t('auth.forgot.resetPassword') || 'Смени паролата'
+                    t('auth.forgot.resetPassword')
                   )}
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="ghost"
-                  className="w-full text-muted-foreground"
-                  onClick={() => { setStep('email'); setError(''); }}
-                >
-                  <ArrowLeft className="mr-2 h-4 w-4" />
-                  {t('auth.forgot.resend') || 'Изпрати нов код'}
                 </Button>
               </form>
             )}
 
             <div className="mt-6 text-center text-sm text-muted-foreground">
               <Link to="/login" className="text-primary hover:underline">
-                {t('auth.forgot.backToLogin') || 'Обратно към входа'}
+                {t('auth.forgot.backToLogin')}
               </Link>
             </div>
           </CardContent>
