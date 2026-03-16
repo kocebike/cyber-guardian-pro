@@ -111,7 +111,13 @@ const Login = () => {
               </Button>
             </form>
             
-            <div className="mt-6 text-center text-sm text-muted-foreground">
+            <div className="mt-4 text-center">
+              <Link to="/forgot-password" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                {t('auth.login.forgotPassword') || 'Забравена парола?'}
+              </Link>
+            </div>
+
+            <div className="mt-4 text-center text-sm text-muted-foreground">
               {t('auth.login.noAccount')}{' '}
               <Link to="/signup" className="text-primary hover:underline">
                 {t('auth.login.signup')}
